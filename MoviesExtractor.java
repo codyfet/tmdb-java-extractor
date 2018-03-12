@@ -151,7 +151,7 @@ public class MoviesExtractor {
 
 		Date start = new Date();
 		
-		moviesExtractor.populateMovies(110000, 120000);
+		moviesExtractor.populateMovies(0, 1000);
 		
 		Date end = new Date();
 		
