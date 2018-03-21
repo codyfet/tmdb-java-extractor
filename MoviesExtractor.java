@@ -20,6 +20,7 @@ public class MoviesExtractor {
     private static final String LANGUAGE = "ru-RU";
 
     int startIndex;
+    int currentIndex;
     int endIndex;
     File resultFile;
     TsvWriter writer;
@@ -31,6 +32,7 @@ public class MoviesExtractor {
     public MoviesExtractor(int startIndex, int endIndex) throws FileNotFoundException, UnsupportedEncodingException {
         File file = new File("tmdb_movies_" + startIndex + "_" + endIndex + ".tsv");
         this.startIndex = startIndex;
+        this.currentIndex = startIndex;
         this.endIndex = endIndex;
         this.resultFile = file;
 
@@ -169,6 +171,7 @@ public class MoviesExtractor {
 
             for (int i = moviesExtractor.startIndex; i < moviesExtractor.endIndex; i++) {
                 String response = moviesExtractor.executeRequest(i);
+                moviesExtractor.currentIndex = i;
                 if (response != null) {
                     Object[] row = moviesExtractor.extractProperties(response);
                     moviesExtractor.writer.writeRow(row);
@@ -180,6 +183,15 @@ public class MoviesExtractor {
 
         } catch (Exception e) {
             e.printStackTrace();
+
+            moviesExtractor.writer.close();
+
+            String updatedFileName = "tmdb_movies_" + moviesExtractor.startIndex + "_" + moviesExtractor.currentIndex + ".tsv";
+            boolean success = moviesExtractor.resultFile.renameTo(new File(updatedFileName ));
+            if (success) {
+                System.out.println("\n");
+                System.out.println("File renamed to " + updatedFileName);
+            }
         } finally {
             moviesExtractor.writer.close();
         }
